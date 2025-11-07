@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Welcome + Letter Modal</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&family=Dancing+Script:wght@600&family=Mulish:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--pink:#ff7292;--card:#ff6f90;--road:#6f4b9b;--shadow:0 10px 20px rgba(0,0,0,.12)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:#fff;font-family:'Quicksand',system-ui}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;transition:filter .35s ease}
+.stage.blurred{filter:blur(6px)}
+.road{position:absolute;left:0;right:0;bottom:12vh;height:6px;background:linear-gradient(90deg,var(--road) 60%,transparent 60%) 0/160px 6px;animation:road-scroll .9s linear infinite}
+@keyframes road-scroll{to{background-position-x:-160px}}
+.bus{position:absolute;bottom:calc(12vh - 34px);left:-260px;width:240px;filter:drop-shadow(0 6px 0 rgba(0,0,0,.15));animation:bus-loop 8s linear infinite}
+.exhaust{position:absolute;bottom:calc(12vh - 30px);left:-260px;width:240px;pointer-events:none;animation:bus-loop 8s linear infinite}
+@keyframes bus-loop{0%{transform:translateX(-260px)}100%{transform:translateX(calc(100vw + 260px))}}
+.heart-bubble{position:absolute;left:132px;bottom:22px;width:14px;height:14px;background:#ff7ea1;transform:rotate(45deg);opacity:.9;animation:bubble 1.6s ease-out infinite}
+.heart-bubble::before,.heart-bubble::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#ff7ea1}
+.heart-bubble::before{left:-7px}.heart-bubble::after{top:-7px}
+.heart-bubble:nth-child(2){left:148px;animation-delay:.25s;transform:scale(.9) rotate(45deg)}
+.heart-bubble:nth-child(3){left:118px;animation-delay:.5s;transform:scale(.8) rotate(45deg)}
+@keyframes bubble{to{transform:translateY(-70px) scale(.6) rotate(45deg);opacity:0}}
+
+.card{position:absolute;left:-120%;top:6vh;width:min(760px,88vw);padding:22px;background:var(--card);color:#fff;border-radius:22px;box-shadow:var(--shadow);
+display:flex;flex-direction:column;align-items:center;gap:14px;transition:transform .8s cubic-bezier(.22,1,.36,1),left .8s cubic-bezier(.22,1,.36,1)}
+.card.show{left:50%;transform:translateX(-50%)}
+.title{font-family:'Pacifico',cursive;font-size:clamp(28px,4.5vw,44px);margin:2px 0 8px}
+.frame{position:relative;width:min(360px,66vw);height:min(220px,42vw);border-radius:14px;overflow:hidden;border:3px solid rgba(255,255,255,.75);background:#fff;display:grid;place-items:center}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.nav{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center}
+.arrow{user-select:none;font-size:38px;line-height:1;padding:6px 12px;color:#ffe6ee;cursor:pointer;opacity:.9}
+.arrow:hover{transform:scale(1.1)}
+.who-line{width:min(520px,80vw)}
+.sender,.receiver{width:100%;background:#fff;border:none;border-radius:10px;padding:12px 18px;font-size:18px;color:#7b3d55;
+box-shadow:inset 0 0 0 3px rgba(255,255,255,.6);font-family:'Pacifico',cursive;text-align:center}
+.sender{opacity:.7}.receiver{display:none}
+.hint{color:#ffe7ef;font-size:14px;opacity:.95}
+.btn-cta{display:none;align-items:center;gap:8px;padding:10px 16px;border:none;border-radius:999px;font-weight:700;cursor:pointer;background:#ffd3e0;color:#7b3d55;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.btn-cta .icon{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;color:#ff5f7f;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.btn-cta.show{display:inline-flex}
+.envelope{position:fixed;top:-80px;width:54px;height:38px;cursor:pointer;z-index:5;animation:drop linear forwards;filter:drop-shadow(0 6px 0 rgba(0,0,0,.12))}
+.envelope svg{width:100%;height:100%}
+@keyframes drop{to{transform:translateY(110vh) rotate(360deg);opacity:.95}}
+.cursor-heart{position:fixed;width:14px;height:14px;transform:rotate(45deg);pointer-events:none;z-index:30;background:#ff7292;opacity:.9;animation:trail 1.2s ease-out forwards;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.cursor-heart::before,.cursor-heart::after{content:"";position:absolute;width:14px;height:14px;border-radius:50%;background:#ff7292}
+.cursor-heart::before{left:-7px;top:0}.cursor-heart::after{left:0;top:-7px}
+@keyframes trail{to{transform:translate(0,30px) rotate(45deg);opacity:0}}
+.cursor-heart.turbo{width:18px;height:18px;animation:trail-fast .7s ease-out forwards}
+.cursor-heart.turbo::before,.cursor-heart.turbo::after{width:18px;height:18px}
+.cursor-heart.turbo::before{left:-9px}.cursor-heart.turbo::after{top:-9px}
+@keyframes trail-fast{to{transform:translate(0,36px) rotate(45deg);opacity:0}}
+.cursor-heart.fall{position:fixed;width:16px;height:16px;transform:rotate(45deg);pointer-events:none;z-index:30;background:#ff7292;opacity:.95;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12));animation:fall-down 1.6s linear forwards}
+.cursor-heart.fall::before,.cursor-heart.fall::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#ff7292}
+.cursor-heart.fall::before{left:-8px;top:0}.cursor-heart.fall::after{left:0;top:-8px}
+@keyframes fall-down{to{top:100vh;opacity:0}}
+@media (max-width:520px){.bus,.exhaust{width:200px}.arrow{font-size:32px}}
+
+/* ===== Modal thư + nền mờ ===== */
+.modal{position:fixed;inset:0;display:none;z-index:50}
+.modal.open{display:block}
+.modal .scrim{position:absolute;inset:0;background:rgba(0,0,0,.25);backdrop-filter:blur(3px)}
+.modal .panel{position:relative;z-index:1;display:grid;place-items:center;height:100%}
+
+.stack{position:relative;width:min(1100px,96vw)}
+.sheet{position:absolute;inset:0;border-radius:22px;background:#fff;box-shadow:0 12px 28px rgba(0,0,0,.20)}
+.sheet.back1{transform:rotate(-10deg) translate(-26px,12px);opacity:.95}
+.sheet.back2{transform:rotate(  9deg) translate( 26px,18px);opacity:.97}
+.front{position:relative;background:#ffecef;border-radius:22px;padding:20px 26px;min-height:220px;display:grid;grid-template-columns:360px 1fr;gap:18px;border:3px dotted rgba(255,90,120,.75)}
+.corner{position:absolute;width:18px;height:18px;background:#ff7a94;transform:rotate(45deg)}
+.corner::before,.corner::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#ff7a94}
+.corner::before{left:-9px;top:0}.corner::after{left:0;top:-9px}
+.tl{top:10px;left:10px}.tr{top:10px;right:10px}.bl{bottom:10px;left:10px}.br{bottom:10px;right:10px}
+.art{display:grid;place-items:center}.art svg{width:100%;max-width:360px;height:auto}
+.msg{color:#2c1a1f;padding:6px 4px}.title{font-family:Pacifico,cursive;font-size:34px;margin:.1rem 0 .6rem}
+.line{font-family:"Dancing Script",cursive;font-size:22px;line-height:1.7;min-height:1.7em}
+.note{color:#b0074a;opacity:.65;font-size:16px;margin-top:6px}
+.caret{display:inline-block;width:8px;height:1em;background:#e86b8e;margin-left:2px;animation:blink 1s steps(1,end) infinite;vertical-align:bottom}
+@keyframes blink{50%{opacity:0}}
+@media (max-width:900px){.front{grid-template-columns:1fr;min-height:unset}.art svg{max-width:300px}}
+.closeX{position:absolute;top:10px;right:16px;background:#fff;border:none;border-radius:999px;padding:6px 10px;
+box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
+</style>
+</head><body>
+<!-- ===================== STAGE (màn 3) ===================== -->
+<div class="stage" id="stage">
+  <div class="road"></div>
+  <svg class="bus" viewBox="0 0 300 170" xmlns="http://www.w3.org/2000/svg" aria-label="bus">
+    <rect x="20" y="40" width="260" height="80" rx="12" fill="#ff9db3" stroke="#333" stroke-width="4"/>
+    <rect x="35" y="52" width="70" height="40" rx="6" fill="#fff" stroke="#333" stroke-width="3"/>
+    <rect x="115" y="52" width="60" height="40" rx="6" fill="#fff" stroke="#333" stroke-width="3"/>
+    <rect x="185" y="52" width="70" height="40" rx="6" fill="#fff" stroke="#333" stroke-width="3"/>
+    <rect x="140" y="88" width="36" height="28" rx="4" fill="#ff9db3" stroke="#333" stroke-width="3"/>
+    <circle cx="90" cy="130" r="18" fill="#333"/><circle cx="210" cy="130" r="18" fill="#333"/>
+    <circle cx="90" cy="130" r="9" fill="#888"/><circle cx="210" cy="130" r="9" fill="#888"/>
+  </svg>
+  <div class="exhaust"><div class="heart-bubble"></div><div class="heart-bubble"></div><div class="heart-bubble"></div></div>
+
+  <div class="card" id="card">
+    <div class="title">Welcome</div>
+    <div class="frame">
+      <img id="slide" alt="Ảnh kỷ niệm"/>
+      <div class="nav"><span class="arrow" id="prev">‹</span><span class="arrow" id="next">›</span></div>
+    </div>
+    <div class="who-line">
+      <div class="sender" id="senderView">Người Gửi: Vũ Hoan (chồng iu)</div>
+      <input class="receiver" id="receiverInput" placeholder="Người nhận: Viết tên vợ iu ở đây ạ💖"/>
+    </div>
+    <div class="hint" id="hint">Đợi xíu… 5s nữa sẽ hiện ô để em nhập tên 💖</div>
+    <button class="btn-cta" id="receiveBtn"><span class="icon">❤️</span>Nhận thư</button>
+  </div>
+</div>
+
+<!-- ===================== MODAL LETTER (màn 4 phủ lên) ===================== -->
+<div class="modal" id="letterModal" aria-hidden="true">
+  <div class="scrim"></div>
+  <div class="panel">
+    <button class="closeX" id="closeLetter">✕</button>
+    <div class="stack">
+      <div class="sheet back1"></div><div class="sheet back2"></div>
+      <div class="sheet front">
+        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+        <!-- Trái: SVG bóng bay tim + hộp quà (động) -->
+        <div class="art">
+          <svg viewBox="0 0 420 260" xmlns="http://www.w3.org/2000/svg" aria-label="gift-animated">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#ffa5b8"/><stop offset="1" stop-color="#ff6f90"/></linearGradient>
+              <filter id="sh" x="-40%" y="-40%" width="180%" height="200%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="4"/><feOffset dy="5"/>
+                <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <ellipse cx="200" cy="210" rx="110" ry="10" fill="#000" opacity=".08"/>
+            <g transform="translate(40,10)">
+              <g><path d="M0 0C-32-34-74 20-20 60C34 20-10-20 0 0Z" fill="url(#g)" filter="url(#sh)">
+                <animateTransform attributeName="transform" type="translate" values="0,0;0,-6;0,0" dur="3s" repeatCount="indefinite"/></path>
+                <path d="M-8 60C-16 96-20 124-26 156" stroke="#ff7a94" stroke-width="3" fill="none">
+                  <animate attributeName="d" values="M-8 60C-16 96-20 124-26 156; M-8 60C-18 92-22 124-28 156; M-8 60C-16 96-20 124-26 156" dur="3s" repeatCount="indefinite"/></path></g>
+              <g transform="translate(100,-4)"><path d="M0 0C-28-30-64 18-18 50C28 18-8-16 0 0Z" fill="url(#g)" filter="url(#sh)">
+                <animateTransform attributeName="transform" type="translate" values="0,0;0,-7;0,0" dur="3.2s" repeatCount="indefinite"/></path>
+                <path d="M-6 50C-14 84-18 110-22 142" stroke="#ff7a94" stroke-width="3" fill="none">
+                  <animate attributeName="d" values="M-6 50C-14 84-18 110-22 142; M-6 50C-16 80-20 110-24 142; M-6 50C-14 84-18 110-22 142" dur="3.2s" repeatCount="indefinite"/></path></g>
+              <g transform="translate(190,6)"><path d="M0 0C32-32 74 18 20 62C-34 18 10-20 0 0Z" fill="url(#g)" filter="url(#sh)">
+                <animateTransform attributeName="transform" type="translate" values="0,0;0,-5;0,0" dur="2.6s" repeatCount="indefinite"/></path>
+                <path d="M8 62C16 98 20 124 26 156" stroke="#ff7a94" stroke-width="3" fill="none">
+                  <animate attributeName="d" values="M8 62C16 98 20 124 26 156; M8 62C18 94 22 124 28 156; M8 62C16 98 20 124 26 156" dur="2.6s" repeatCount="indefinite"/></path></g>
+            </g>
+            <g transform="translate(110,150)">
+              <rect x="0" y="20" width="200" height="64" rx="12" fill="#fff" stroke="#ff7a94" stroke-width="6"/>
+              <rect x="94" y="20" width="12" height="64" fill="#ff7a94"/>
+              <rect x="-10" y="6" width="220" height="18" rx="9" fill="#ff7a94">
+                <animateTransform attributeName="transform" type="translate" values="0,0;0,-3;0,0" dur="1.3s" repeatCount="indefinite"/></rect>
+              <g transform="translate(100,6)">
+                <path d="M0 0C-30-8-44-10-52 4C-56 12-50 18-42 18C-30 18-18 16 0 10Z" fill="#ff7a94">
+                  <animate attributeName="d" values="M0 0C-30-8-44-10-52 4C-56 12-50 18-42 18C-30 18-18 16 0 10Z; M0 0C-32-9-46-11-54 3C-58 12-50 18-42 18C-30 18-18 16 0 10Z; M0 0C-30-8-44-10-52 4C-56 12-50 18-42 18C-30 18-18 16 0 10Z" dur="1.3s" repeatCount="indefinite"/></path>
+                <path d="M0 0C30-8 44-10 52 4C56 12 50 18 42 18C30 18 18 16 0 10Z" fill="#ff7a94">
+                  <animate attributeName="d" values="M0 0C30-8 44-10 52 4C56 12 50 18 42 18C30 18 18 16 0 10Z; M0 0C32-9 46-11 54 3C58 12 50 18 42 18C30 18 18 16 0 10Z; M0 0C30-8 44-10 52 4C56 12 50 18 42 18C30 18 18 16 0 10Z" dur="1.3s" repeatCount="indefinite"/></path>
+                <rect x="-4" y="-3" width="8" height="32" fill="#ff7a94">
+                  <animateTransform attributeName="transform" type="scale" values="1,1;1,1.06;1,1" dur="1.3s" repeatCount="indefinite"/></rect>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <!-- Phải: chữ đánh máy -->
+        <div class="msg">
+          <div class="title">Gửi em!</div>
+          <div id="lines"></div>
+          <div class="note">— Anh gửi em một ngày thật đẹp —</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Carousel ảnh (đặt ảnh cùng thư mục: anh1.png, heart.gif, anh2.png ...) ===== */
+const images=["anh1.png","anh2.png"].filter(Boolean);
+images.forEach(src=>{const i=new Image();i.src=src;});
+const slide=document.getElementById('slide');let idx=0;
+function show(i){if(!images.length){slide.removeAttribute('src');return;}idx=(i+images.length)%images.length;slide.src=images[idx]}
+document.getElementById('prev').onclick=()=>show(idx-1);
+document.getElementById('next').onclick=()=>show(idx+1);show(0);
+
+/* Card xuất hiện */
+setTimeout(()=>document.getElementById('card').classList.add('show'),1200);
+
+/* Tên người nhận + hiện nút */
+const senderView=document.getElementById('senderView');
+const receiverInput=document.getElementById('receiverInput');
+const hint=document.getElementById('hint');
+const receiveBtn=document.getElementById('receiveBtn');
+
+setTimeout(()=>{senderView.style.display='none';receiverInput.style.display='block';receiverInput.focus();
+                 hint.textContent='Gõ tên vợ vào rùi bấm Enter để nhận thư nhe 💌';},5000);
+receiverInput.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && receiverInput.value.trim()){receiveBtn.classList.add('show');
+    hint.textContent='Nhấn “Nhận thư” để xem điều anh gửi tới em nè 💌';}
+});
+
+/* Mưa phong bì + click 1 lá → mở LETTER MODAL */
+let rainTimer=null;
+receiveBtn.addEventListener('click',()=>{ if(rainTimer) return; startEnvelopeRain(60,70); });
+function envelopeSVG(){return `<svg viewBox="0 0 120 84" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="2" width="116" height="80" rx="10" fill="#fff" stroke="#3a2b46" stroke-width="4"/>
+  <path d="M8 8 L60 44 L112 8" fill="none" stroke="#ff7292" stroke-width="6"/>
+  <path d="M8 76 L60 40 L112 76" fill="none" stroke="#ff7292" stroke-width="6"/></svg>`;}
+function startEnvelopeRain(n=40,every=100){let i=0;rainTimer=setInterval(()=>{
+  if(i++>=n){clearInterval(rainTimer);rainTimer=null;}
+  const w=document.createElement('div');w.className='envelope';w.style.left=Math.random()*100+'vw';
+  w.style.animationDuration=(3+Math.random()*2)+'s';w.innerHTML=envelopeSVG();document.body.appendChild(w);
+  w.addEventListener('click', openLetterModal); w.addEventListener('animationend',()=>w.remove());
+},every);}
+
+/* Hiệu ứng trái tim theo chuột + rơi liên tục + turbo */
+const stage=document.getElementById('stage');let lastX=innerWidth/2,lastY=innerHeight/3;
+function spawnTrail(x,y,turbo=false){const h=document.createElement('div');h.className='cursor-heart'+(turbo?' turbo':'');
+  const off=turbo?9:7;h.style.left=(x-off)+'px';h.style.top=(y-off)+'px';document.body.appendChild(h);
+  h.addEventListener('animationend',()=>h.remove());}
+function spawnFall(x,y){const h=document.createElement('div');h.className='cursor-heart fall';
+  h.style.left=(x-8)+'px';h.style.top=(y-8)+'px';document.body.appendChild(h);h.addEventListener('animationend',()=>h.remove());}
+stage.addEventListener('mousemove',e=>{lastX=e.clientX;lastY=e.clientY;spawnTrail(lastX,lastY,false);});
+let fallInterval=null;const NORMAL_RATE=140,TURBO_RATE=40;
+function startFall(rate=NORMAL_RATE){stopFall();fallInterval=setInterval(()=>spawnFall(lastX,lastY),rate);}
+function stopFall(){if(fallInterval){clearInterval(fallInterval);fallInterval=null;}}
+startFall(NORMAL_RATE);
+let trailTurboTimer=null;
+stage.addEventListener('mousedown',()=>{startFall(TURBO_RATE);
+  if(!trailTurboTimer) trailTurboTimer=setInterval(()=>spawnTrail(lastX,lastY,true),40);});
+['mouseup','mouseleave','mouseout'].forEach(evt=>stage.addEventListener(evt,()=>{startFall(NORMAL_RATE);
+  if(trailTurboTimer){clearInterval(trailTurboTimer);trailTurboTimer=null;}}));
+
+/* ===== Modal thư: mở & đóng + gõ từng dòng ===== */
+const letterModal=document.getElementById('letterModal'), closeLetter=document.getElementById('closeLetter');
+function openLetterModal(){
+  stage.classList.add('blurred'); letterModal.classList.add('open'); playLetter();  // chạy typewriter
+  // dọn phong bì còn lại
+  document.querySelectorAll('.envelope').forEach(e=>e.remove());
+  if(rainTimer){clearInterval(rainTimer);rainTimer=null;}
+}
+function closeLetterModal(){
+  stage.classList.remove('blurred'); letterModal.classList.remove('open'); clearTimers();
+}
+closeLetter.addEventListener('click',closeLetterModal);
+letterModal.querySelector('.scrim').addEventListener('click',closeLetterModal);
+
+/* Nội dung thư + typewriter (như code #4) */
+const SCRIPT=[
+  "Ú òa",
+  "Đây là bất ngờ hôm nay anh gửi tặng tới em nè",
+  "Anh biết nay vợ đã vất vả và mệt mỏi gòi😁",
+  "Nên là anh mún làm một chút gì đóa khiến vợ vui hơn🥰",
+  "Mong cho vợ tui lun vui vẻ, luôn nở nụ cười trên môi nè😸",
+  "Vì điều khiến anh vui nhất là được thấy em hạnh phúc ạ.💞",
+  "Iu vợ nhất ạ💖"
+];
+const SPEED=24, GAP=420; let timers=[];
+function clearTimers(){timers.forEach(t=>clearTimeout(t));timers=[];}
+function buildLines(){const box=document.getElementById('lines');box.innerHTML='';
+  return SCRIPT.map(()=>{const d=document.createElement('div');d.className='line';box.appendChild(d);return d;});}
+function typeLine(el,text,start){return new Promise(res=>{
+  el.textContent=''; const caret=document.createElement('span');caret.className='caret';el.appendChild(caret);
+  for(let i=0;i<=text.length;i++){timers.push(setTimeout(()=>{
+    if(el.firstChild && el.firstChild!==caret) el.removeChild(el.firstChild);
+    el.textContent=text.slice(0,i); el.appendChild(caret); if(i===text.length){caret.remove();res();}
+  }, start + i*SPEED));}
+});}
+async function playLetter(){clearTimers();const els=buildLines();let t=120;
+  for(let i=0;i<SCRIPT.length;i++){await typeLine(els[i],SCRIPT[i],t);t+=SCRIPT[i].length*SPEED+GAP;}
+}
+</script>
+</body></html>

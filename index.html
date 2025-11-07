@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loading Love</title>
+  <style>
+    :root{
+      --bg:#ffd6e1; --bar:#f3766b; --bar-dark:#e86a5f;
+      --track:#ffffff; --border:#5e5e5e; --text:#ff6f61;
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0; background:var(--bg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .wrap{ width:min(560px,92vw); text-align:center; }
+
+    .bar-wrap{
+      position:relative; display:inline-block;
+      width:420px; max-width:92vw;
+      padding:6px; border:3px solid var(--border);
+      border-radius:8px; background:var(--track);
+      box-shadow:0 3px 0 rgba(0,0,0,.15);
+    }
+    .bar{
+      height:28px; border-radius:4px;
+      background:linear-gradient(0deg,var(--bar-dark),var(--bar));
+      width:0%; transition:width .15s linear; position:relative; overflow:hidden;
+    }
+    .percent{
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-weight:700; color:#fff; text-shadow:0 1px 0 rgba(0,0,0,.35); font-size:14px;
+    }
+
+    /* 3 trái tim trang trí cố định */
+    .heart{ position:absolute; top:-28px; width:26px; height:26px;
+      filter:drop-shadow(0 2px 0 rgba(0,0,0,.15))}
+    .heart.left{ left:-8px } .heart.center{ left:calc(50% - 13px); top:-34px }
+    .heart.right{ right:-8px }
+
+    /* TRÁI TIM CHẠY THEO THANH LOAD */
+    .heart.runner{
+      top:-22px; width:28px; height:28px;
+      left:-14px;                 /* điểm đầu */
+      transition:left .15s linear;
+      z-index:3;                  /* nổi lên trên */
+    }
+
+    .text{ margin-top:14px; color:var(--text); font-weight:700; letter-spacing:1.5px }
+    .dots::after{ content:" . . ."; animation:dots 1.2s steps(4,end) infinite }
+    @keyframes dots{ 0%{content:""} 25%{content:" ."} 50%{content:" . ."} 75%{content:" . . ."} 100%{content:""} }
+
+    .btn{
+      margin-top:18px; padding:10px 18px; border:none; border-radius:22px;
+      background:var(--bar); color:#fff; font-weight:700;
+      box-shadow:0 4px 0 rgba(0,0,0,.15); cursor:pointer;
+      transition:transform .05s ease, filter .2s ease, opacity .3s ease;
+      opacity:0; pointer-events:none;
+    }
+    .btn:hover{ filter:brightness(1.05) } .btn:active{ transform:translateY(1px) }
+    .btn.show{ opacity:1; pointer-events:auto }
+    .bounce{ animation:bounce .6s ease }
+    @keyframes bounce{
+      0%{transform:translateY(0)} 30%{transform:translateY(-8px)}
+      60%{transform:translateY(2px)} 100%{transform:translateY(0)}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bar-wrap" id="barWrap" aria-label="Loading love">
+      <!-- 3 trái tim trang trí -->
+      <svg class="heart left" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#ff6f73" stroke="#e2555d" stroke-width="1.5"
+              d="M12 21s-7.5-4.7-9.7-8.5C.4 9.2 1.7 6.2 4.6 5.4 6.4 4.9 8.3 5.6 9.5 7c1.2-1.4 3.1-2.1 4.9-1.6 2.9.8 4.2 3.8 2.3 7.1C19.5 16.3 12 21 12 21z"/>
+      </svg>
+      <svg class="heart center" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#ff6f73" stroke="#e2555d" stroke-width="1.5"
+              d="M12 21s-7.5-4.7-9.7-8.5C.4 9.2 1.7 6.2 4.6 5.4 6.4 4.9 8.3 5.6 9.5 7c1.2-1.4 3.1-2.1 4.9-1.6 2.9.8 4.2 3.8 2.3 7.1C19.5 16.3 12 21 12 21z"/>
+      </svg>
+      <svg class="heart right" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#ff6f73" stroke="#e2555d" stroke-width="1.5"
+              d="M12 21s-7.5-4.7-9.7-8.5C.4 9.2 1.7 6.2 4.6 5.4 6.4 4.9 8.3 5.6 9.5 7c1.2-1.4 3.1-2.1 4.9-1.6 2.9.8 4.2 3.8 2.3 7.1C19.5 16.3 12 21 12 21z"/>
+      </svg>
+
+      <!-- TRÁI TIM CHẠY (có tim trắng bên trong cho giống ảnh bạn gửi) -->
+      <svg class="heart runner" id="runner" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#ff6f73" stroke="#e2555d" stroke-width="1.2"
+              d="M12 21s-7.5-4.7-9.7-8.5C.4 9.2 1.7 6.2 4.6 5.4 6.4 4.9 8.3 5.6 9.5 7c1.2-1.4 3.1-2.1 4.9-1.6 2.9.8 4.2 3.8 2.3 7.1C19.5 16.3 12 21 12 21z"/>
+        <!-- tim nhỏ màu trắng ở giữa -->
+        <path fill="#ffffff"
+              d="M12 14.3s-2.6-1.6-3.3-3c-.7-1.3.2-2.7 1.5-3 1-.2 1.9.3 2.3 1 0 0 .8-1.2 2.2-1 1.3.3 2.2 1.7 1.5 3-.7 1.3-3.2 3-3.2 3z"/>
+      </svg>
+
+      <div class="bar" id="bar">
+        <div class="percent" id="percent">0%</div>
+      </div>
+    </div>
+
+    <div class="text dots" id="statusText">LOADING LOVE</div>
+    <button class="btn" id="goBtn">Click me!</button>
+  </div>
+
+  <script>
+    const STEP_MS = 40, STEP_VAL = 1;
+    const bar = document.getElementById('bar');
+    const percent = document.getElementById('percent');
+    const statusText = document.getElementById('statusText');
+    const goBtn = document.getElementById('goBtn');
+    const hearts = document.querySelectorAll('.heart:not(.runner)');
+    const runner = document.getElementById('runner');
+
+    // helper: đặt vị trí trái tim chạy theo % (giữ tâm ở đầu thanh)
+    function setRunner(percentVal){
+      // -14px để tâm icon nằm đúng đầu vạch; clamp trong [0%,100%]
+      const x = Math.min(100, Math.max(0, percentVal));
+      runner.style.left = `calc(${x}% - 14px)`;
+    }
+    setRunner(0);
+
+    let p = 0;
+    const timer = setInterval(() => {
+      p = Math.min(100, p + STEP_VAL);
+      bar.style.width = p + '%';
+      percent.textContent = p + '%';
+      setRunner(p);
+
+      if (p === 100) {
+        clearInterval(timer);
+        statusText.classList.remove('dots');
+        statusText.textContent = 'Ok rồi đó :)';
+        goBtn.classList.add('show');
+        hearts.forEach(h => h.classList.add('bounce'));
+        setTimeout(()=>hearts.forEach(h => h.classList.remove('bounce')), 650);
+      }
+    }, STEP_MS);
+
+    goBtn.addEventListener('click', () => {
+      alert('Đến đoạn tỏ tình nè 💗');
+      location.href = 'heart.html';        // ← sang trang trái tim
+     });
+
+  </script>
+</body>
+</html>
