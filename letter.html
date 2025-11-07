@@ -171,7 +171,7 @@ box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer}
 
 <script>
 /* ===== Carousel ảnh (đặt ảnh cùng thư mục: anh1.png, heart.gif, anh2.png ...) ===== */
-const images=["anh1.png","anh2.png"].filter(Boolean);
+const images=["anh2.png"].filter(Boolean);
 images.forEach(src=>{const i=new Image();i.src=src;});
 const slide=document.getElementById('slide');let idx=0;
 function show(i){if(!images.length){slide.removeAttribute('src');return;}idx=(i+images.length)%images.length;slide.src=images[idx]}
@@ -266,3 +266,4 @@ async function playLetter(){clearTimers();const els=buildLines();let t=120;
 }
 </script>
 </body></html>
+
